@@ -52,20 +52,17 @@ def calcSW(df,dudx,dudy,dudz,dvdx,dvdy,dvdz,dwdx,dwdy,dwdz):
 
 
 
-df = pd.read_csv('inputFiles/RANS.csv', low_memory=False,skiprows=5)
+df = pd.read_csv('inputFiles/URANSleak1.csv', low_memory=False,skiprows=5)
 print(df.columns)
+
 df.columns= \
-    ['x','y','z','CH4MF','dCH4MF','nut','dnut','p','dp','T','epsilon','depsilon','k','dk','velocity',
+    ['ddd','x','y','z','CH4MF','dCH4MF','nut','dnut','p','dp','T','epsilon','depsilon','k','dk','velocity',
      'dudx','dudy','dudz','dvdx','dvdy','dvdz','dwdx','dwdy','dwdz','WSSx', 'WSSy','WSSz','a','b','c']
 
 print(df.describe())
 print(df.shape)
-#df=df.sample(10000,random_state=42)
-#print(df.describe())
-#print(df.shape)
-#df.to_hdf('outputFiles/RANSsampled.h5', key='df', mode='w')
 print('dropping stuff')
-df.drop(columns=['WSSy','WSSz','a','b','c'],inplace=True)
+df.drop(columns=['ddd','WSSy','WSSz','a','b','c'],inplace=True)
 print('calculate S and W')
 calcSW(df,'dudx','dudy','dudz','dvdx','dvdy','dvdz','dwdx','dwdy','dwdz')
 print('dropping stuff again')
@@ -83,11 +80,11 @@ m = len(df['WSSx']) - n
 
 df2 = pd.DataFrame(df.loc[df['WSSx'] != ' null'])
 df2.drop(columns=['WSSx'],inplace=True)
-df2.to_csv('outputFiles/boundaryRANS.csv')
-df2.to_hdf('outputFiles/boundaryRANS.h5', key='df', mode='w')
+df2.to_csv('outputFiles/boundaryURANSleak1.csv')
+df2.to_hdf('outputFiles/boundaryURANSleak1.h5', key='df', mode='w')
 print('written boundary file')
 df.drop(columns=['WSSx'],inplace=True)
-df.to_hdf('outputFiles/RANSclean.h5', key='df', mode='w')
-df.to_csv('outputFiles/RANSclean.csv')
+df.to_hdf('outputFiles/URANSleak1clean.h5', key='df', mode='w')
+df.to_csv('outputFiles/URANSleak1clean.csv')
 print('written csv file')
 print(m,n,len(df2))
