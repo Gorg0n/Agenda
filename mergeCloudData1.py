@@ -4,15 +4,18 @@ import numpy as np
 inFolder = 'outputFiles/'
 outFolder = 'outputFiles/'
 fileRANS = 'RANSclean.h5'
-fileCloud = 'CLOUDcolURANSleak2clean.h5'
-fileLeak = 'boundaryURANSleak2.h5'
+fileCloud = 'CLOUDcolURANSleak1clean.h5'
+fileLeak = 'leakLocation1.csv'
+deltax = 0.0
+deltay = 0.0
+deltaz = 0.063
 
 fin = inFolder + fileRANS
 df = pd.read_hdf(fin)
 fin = inFolder + fileCloud
 dfC = pd.read_hdf(fin)
 fin = inFolder + fileLeak
-dfLeak = pd.read_hdf(fin)
+dfLeak = pd.read_csv(fin)
 
 
 print(df.shape)
@@ -24,13 +27,17 @@ print(dfLeak.columns)
 
 df['CLOUD'] = dfC['CLOUD'].values
 df.drop(columns=['CH4MF','dCH4MF'])
-xmin = dfLeak['x'].min()-0.063
-xmax = dfLeak['x'].max()+0.063
+xmin = dfLeak['x'].min()-deltax
+xmax = dfLeak['x'].max()+deltax
 xave = (xmin + xmax )/2
 ymin = dfLeak['y'].min()
 ymax = dfLeak['y'].max()
-zmin = dfLeak['z'].min()
-zmax = dfLeak['z'].max()
+yave = (ymin+ymax)/2
+zmin = dfLeak['z'].min()-deltaz
+zmax = dfLeak['z'].max()+deltaz
+zave = (zmin + zmax)/2
+
+print(xmin,xmax,ymin,ymax,zmin,zmax)
 
 df['IC']=0
 conta=0
@@ -43,12 +50,18 @@ for ind in df.index:
 
 print('numero celle individuate come IC:', conta)
 
-df['axis']= np.abs(df['x']-xave)
-df['radius'] = np.sqrt(df['y']**2 + df['z']**2)
-fin = outFolder+'RANSconLeak2'
+df['axis']= df['z']-zave
+df['radius'] = np.sqrt((df['y']-yave)**2 + (df['x']-xave)**2)
+fin = outFolder+'RANSconLeak1'
 df.to_hdf(fin, key='df', mode='w')
-dfCloud = pd.DataFrame(df.loc[df['radius'] > 1])
+dfCloud = pd.DataFrame(df.loc[df['radius'] < 1])
 print('cilindro del getto: ', dfCloud.shape)
-fin = outFolder+'RANScylLeak2'
-dfCloud.to_hdf(fin, key='df', mode='w')
+fin = outFolder+'RANScylLeak1'
+dfCloud.to_hdf(fin, key='dfCloud', mode='w')
+
+mantieni = ['x','y','z','CLOUD','BC','IC','axis','radius']
+for col in dfCloud.columns:
+    if col not in mantieni:
+        dfCloud.drop(columns=col,inplace=True)
+dfCloud.to_csv('outputFiles/RANScylLeak1.csv')
 print('ciao')
