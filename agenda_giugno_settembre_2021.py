@@ -1,13 +1,13 @@
 from pptxClass import *
 
-filePresentazione = 'agenda-lezioni'
-oo = 'template-lezioni.pptx'
+filePresentazione = 'presentazione2'
+oo = 'gennaio-febbraio-2020.pptx'
 pptx = PPTX(filePresentazione, 'IO', oo)
 
 from datetime import date,timedelta
-sdate = date(2020, 10, 19)
-edate = date(2020,12,27)
-delta = edate - sdate
+sdate = date(2021, 5, 31)
+edate = date(2021,9,26)
+delta = edate - sdate0
 giorni = ['lun','mart','merc','giov','ven','sab','dom']
 mesi = ['gennaio', 'febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre']
 mese = []
